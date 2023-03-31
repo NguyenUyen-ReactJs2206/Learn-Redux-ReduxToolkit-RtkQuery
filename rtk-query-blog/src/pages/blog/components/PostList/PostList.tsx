@@ -1,4 +1,6 @@
-import { useGetPostsQuery } from '../../blog.service'
+import { useDispatch } from 'react-redux'
+import { useDeletePostMutation, useGetPostsQuery } from '../../blog.service'
+import { startEditPost } from '../../blog.slice'
 import PostItem from '../PostItem'
 import SkeletonPost from '../SkeletonPost'
 
@@ -6,7 +8,15 @@ export default function PostList() {
   //isloading chi danh cho lan fetch dau tien
   // isFetching la cho moi lan goi Api -- thuong dung
   const { data, isLoading, isFetching } = useGetPostsQuery()
-  console.log(data, isLoading, isFetching)
+  const [deletePost] = useDeletePostMutation()
+  const dispatch = useDispatch()
+  const startEdit = (id: string) => {
+    dispatch(startEditPost(id))
+  }
+
+  const handleDeletePost = (id: string) => {
+    deletePost(id)
+  }
 
   return (
     <div className='bg-white py-6 sm:py-8 lg:py-12'>
@@ -25,7 +35,10 @@ export default function PostList() {
             </>
           )}
 
-          {!isFetching && data?.map((post) => <PostItem key={post.id} post={post} />)}
+          {!isFetching &&
+            data?.map((post) => (
+              <PostItem key={post.id} post={post} startEdit={startEdit} handleDeletePost={handleDeletePost} />
+            ))}
         </div>
       </div>
     </div>
